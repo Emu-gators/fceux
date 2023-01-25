@@ -70,11 +70,11 @@ static int StateShow;
 //tells the save system innards that we're loading the old format
 bool FCEU_state_loading_old_format = false;
 
-char lastSavestateMade[2048]; //Stores the filename of the last savestate made (needed for UndoSavestate)
+std::string lastSavestateMade; //Stores the filename of the last savestate made (needed for UndoSavestate)
 bool undoSS = false;		  //This will be true if there is lastSavestateMade, it was made since ROM was loaded, a backup state for lastSavestateMade exists
 bool redoSS = false;		  //This will be true if UndoSaveState is run, will turn false when a new savestate is made
 
-char lastLoadstateMade[2048]; //Stores the filename of the last state loaded (needed for Undo/Redo loadstate)
+std::string lastLoadstateMade; //Stores the filename of the last state loaded (needed for Undo/Redo loadstate)
 bool undoLS = false;		  //This will be true if a backupstate was made and it was made since ROM was loaded
 bool redoLS = false;		  //This will be true if a backupstate was loaded, meaning redoLoadState can be run
 
@@ -88,7 +88,7 @@ EMUFILE_MEMORY memory_savestate;
 // temporary buffer for compressed data of a savestate
 std::vector<uint8> compressed_buf;
 
-#define SFMDATA_SIZE (64)
+#define SFMDATA_SIZE (128)
 static SFORMAT SFMDATA[SFMDATA_SIZE];
 static int SFEXINDEX;
 
@@ -466,7 +466,7 @@ bool FCEUSS_SaveMS(EMUFILE* outstream, int compressionLevel)
 void FCEUSS_Save(const char *fname, bool display_message)
 {
 	EMUFILE* st = 0;
-	char fn[2048];
+	std::string fn;
 
 	if (geniestage==1)
 	{
@@ -478,24 +478,24 @@ void FCEUSS_Save(const char *fname, bool display_message)
 	if(fname)	//If filename is given use it.
 	{
 		st = FCEUD_UTF8_fstream(fname, "wb");
-		strcpy(fn, fname);
+		fn.assign(fname);
 	}
 	else		//Else, generate one
 	{
 		//FCEU_PrintError("daCurrentState=%d",CurrentState);
-		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0).c_str());
+		fn = FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0);
 
 		//backup existing savestate first
-		if (CheckFileExists(fn) && backupSavestates)	//adelikat:  If the files exists and we are allowed to make backup savestates
+		if (CheckFileExists(fn.c_str()) && backupSavestates)	//adelikat:  If the files exists and we are allowed to make backup savestates
 		{
-			CreateBackupSaveState(fn);		//Make a backup of previous savestate before overwriting it
-			strcpy(lastSavestateMade,fn);	//Remember what the last savestate filename was (for undoing later)
+			CreateBackupSaveState(fn.c_str());		//Make a backup of previous savestate before overwriting it
+			lastSavestateMade.assign(fn);	//Remember what the last savestate filename was (for undoing later)
 			undoSS = true;					//Backup was created so undo is possible
 		}
 		else
 			undoSS = false;					//so backup made so lastSavestateMade does have a backup file, so no undo
 
-		st = FCEUD_UTF8_fstream(fn,"wb");
+		st = FCEUD_UTF8_fstream(fn.c_str(),"wb");
 	}
 
 	if (st == NULL || st->get_fp() == NULL)
@@ -512,7 +512,7 @@ void FCEUSS_Save(const char *fname, bool display_message)
 		CallRegisteredLuaSaveFunctions(CurrentState, saveData);
 
 		char luaSaveFilename [512];
-		strncpy(luaSaveFilename, fn, 512);
+		strncpy(luaSaveFilename, fn.c_str(), 512);
 		luaSaveFilename[512-(1+7/*strlen(".luasav")*/)] = '\0';
 		strcat(luaSaveFilename, ".luasav");
 		if(saveData.recordList)
@@ -724,7 +724,7 @@ bool FCEUSS_LoadFP(EMUFILE* is, ENUM_SSLOADPARAMS params)
 bool FCEUSS_Load(const char *fname, bool display_message)
 {
 	EMUFILE* st;
-	char fn[2048];
+	std::string fn;
 
 	//mbg movie - this needs to be overhauled
 	////this fixes read-only toggle problems
@@ -742,12 +742,12 @@ bool FCEUSS_Load(const char *fname, bool display_message)
 	if (fname)
 	{
 		st = FCEUD_UTF8_fstream(fname, "rb");
-		strcpy(fn, fname);
+		fn.assign(fname);
 	} else
 	{
-		strcpy(fn, FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname).c_str());
-		st=FCEUD_UTF8_fstream(fn,"rb");
-        strcpy(lastLoadstateMade,fn);
+		fn = FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname);
+		st=FCEUD_UTF8_fstream(fn.c_str(),"rb");
+        	lastLoadstateMade.assign(fn);
 	}
 
 	if (st == NULL || (st->get_fp() == NULL))
@@ -755,7 +755,7 @@ bool FCEUSS_Load(const char *fname, bool display_message)
 		if (display_message)
 		{
 			FCEU_DispMessage("State %d load error.", 0, CurrentState);
-			//FCEU_DispMessage("State %d load error. Filename: %s", 0, CurrentState, fn);
+			//FCEU_DispMessage("State %d load error. Filename: %s", 0, CurrentState, fn.c_str());
 		}
 		SaveStateStatus[CurrentState] = 0;
 		return false;
@@ -773,14 +773,14 @@ bool FCEUSS_Load(const char *fname, bool display_message)
             if (display_message)
 			{
                 FCEU_DispMessage("State %s loaded.", 0, szFilename);
-				//FCEU_DispMessage("State %s loaded. Filename: %s", 0, szFilename, fn);
+				//FCEU_DispMessage("State %s loaded. Filename: %s", 0, szFilename, fn.c_str());
             }
 		} else
 		{
             if (display_message)
 			{
                 FCEU_DispMessage("State %d loaded.", 0, CurrentState);
-				//FCEU_DispMessage("State %d loaded. Filename: %s", 0, CurrentState, fn);
+				//FCEU_DispMessage("State %d loaded. Filename: %s", 0, CurrentState, fn.c_str());
             }
 			SaveStateStatus[CurrentState] = 1;
 		}
@@ -792,7 +792,7 @@ bool FCEUSS_Load(const char *fname, bool display_message)
 			LuaSaveData saveData;
 
 			char luaSaveFilename [512];
-			strncpy(luaSaveFilename, fn, 512);
+			strncpy(luaSaveFilename, fn.c_str(), 512);
 			luaSaveFilename[512-(1+7/*strlen(".luasav")*/)] = '\0';
 			strcat(luaSaveFilename, ".luasav");
 			FILE* luaSaveFile = fopen(luaSaveFilename, "rb");
@@ -1067,13 +1067,13 @@ void SwapSaveState()
 	//Both files must exist
 	//--------------------------------------------------------------------------------------------
 
-	if (!lastSavestateMade)
+	if (lastSavestateMade.empty())
 	{
 		FCEUI_DispMessage("Can't Undo",0);
 		FCEUI_printf("Undo savestate was attempted but unsuccessful because there was not a recently used savestate.\n");
 		return;		//If there is no last savestate, can't undo
 	}
-	string backup = GenerateBackupSaveStateFn(lastSavestateMade);	//Get filename of backup state
+	string backup = GenerateBackupSaveStateFn(lastSavestateMade.c_str());	//Get filename of backup state
 	if (!CheckFileExists(backup.c_str()))
 	{
 		FCEUI_DispMessage("Can't Undo",0);
@@ -1087,9 +1087,9 @@ void SwapSaveState()
 	string temp = backup;					//Put backup filename in temp
 	temp.append("x");						//Add x
 
-	rename(backup.c_str(),temp.c_str());		//rename backup file to temp file
-	rename(lastSavestateMade,backup.c_str());	//rename current as backup
-	rename(temp.c_str(),lastSavestateMade);		//rename backup as current
+	rename(backup.c_str(),temp.c_str());			//rename backup file to temp file
+	rename(lastSavestateMade.c_str(),backup.c_str());	//rename current as backup
+	rename(temp.c_str(),lastSavestateMade.c_str());		//rename backup as current
 
 	undoSS = true;	//Just in case, if this was run, then there is definately a last savestate and backup
 	if (redoSS)				//This was a redo function, so if run again it will be an undo again
@@ -1172,10 +1172,10 @@ void LoadBackup()
 void RedoLoadState()
 {
 	if (!redoLS) return;
-	if (lastLoadstateMade && redoLS)
+	if (!lastLoadstateMade.empty() && redoLS)
 	{
-		FCEUSS_Load(lastLoadstateMade);
-		FCEUI_printf("Redoing %s\n",lastLoadstateMade);
+		FCEUSS_Load(lastLoadstateMade.c_str());
+		FCEUI_printf("Redoing %s\n",lastLoadstateMade.c_str());
 	}
 	redoLS = false;		//Flag that RedoLoadState can not be run again
 	undoLS = true;		//Flag that LoadBackup can be run again

@@ -433,6 +433,7 @@ xcopy /y /d "$(ProjectDir)\..\src\drivers\win\7z_64.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\src\boards\32.cpp" />
     <ClCompile Include="..\src\boards\33.cpp" />
     <ClCompile Include="..\src\boards\34.cpp" />
+    <ClCompile Include="..\src\boards\354.cpp" />
     <ClCompile Include="..\src\boards\36.cpp" />
     <ClCompile Include="..\src\boards\3d-block.cpp" />
     <ClCompile Include="..\src\boards\40.cpp" />
@@ -473,6 +474,7 @@ xcopy /y /d "$(ProjectDir)\..\src\drivers\win\7z_64.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\src\boards\cheapocabra.cpp" />
     <ClCompile Include="..\src\boards\cityfighter.cpp" />
     <ClCompile Include="..\src\boards\coolboy.cpp" />
+    <ClCompile Include="..\src\boards\coolgirl.cpp" />
     <ClCompile Include="..\src\boards\dance2000.cpp" />
     <ClCompile Include="..\src\boards\eh8813a.cpp" />
     <ClCompile Include="..\src\boards\et-100.cpp" />
@@ -483,6 +485,7 @@ xcopy /y /d "$(ProjectDir)\..\src\drivers\win\7z_64.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\src\boards\fns.cpp" />
     <ClCompile Include="..\src\boards\hp10xx_hp20xx.cpp" />
     <ClCompile Include="..\src\boards\hp898f.cpp" />
+    <ClCompile Include="..\src\boards\inx007t.cpp" />
     <ClCompile Include="..\src\boards\ks7010.cpp" />
     <ClCompile Include="..\src\boards\ks7012.cpp" />
     <ClCompile Include="..\src\boards\ks7013.cpp" />

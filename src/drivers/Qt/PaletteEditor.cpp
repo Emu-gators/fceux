@@ -314,14 +314,14 @@ void PaletteEditorDialog_t::openPaletteFileDialog(void)
 {
 	int ret, useNativeFileDialogVal;
 	QString filename;
-	char dir[512];
-	char exePath[512];
+	std::string dir;
+	const char *exePath = nullptr;
 	std::string  last, iniPath;
 	QFileDialog  dialog(this, tr("Open Palette From File") );
 	QList<QUrl> urls;
 	QDir  d;
 
-	fceuExecutablePath( exePath, sizeof(exePath) );
+	exePath = fceuExecutablePath();
 
 	//urls = dialog.sidebarUrls();
 	urls << QUrl::fromLocalFile( QDir::rootPath() );
@@ -403,7 +403,7 @@ void PaletteEditorDialog_t::openPaletteFileDialog(void)
 	}
 	getDirFromFile( last.c_str(), dir );
 
-	dialog.setDirectory( tr(dir) );
+	dialog.setDirectory( tr(dir.c_str()) );
 
 	// Check config option to use native file dialog or not
 	g_config->getOption ("SDL.UseNativeFileDialog", &useNativeFileDialogVal);

@@ -494,13 +494,13 @@ void PaletteConfDialog_t::openPaletteFile(void)
 	int ret, useNativeFileDialogVal;
 	QString filename;
 	std::string last, iniPath;
-	char dir[512];
-	char exePath[512];
+	std::string dir;
+	const char *exePath = nullptr;
 	QFileDialog dialog(this, tr("Open NES Palette"));
 	QList<QUrl> urls;
 	QDir d;
 
-	fceuExecutablePath(exePath, sizeof(exePath));
+	exePath = fceuExecutablePath();
 
 	//urls = dialog.sidebarUrls();
 	urls << QUrl::fromLocalFile(QDir::rootPath());
@@ -577,7 +577,7 @@ void PaletteConfDialog_t::openPaletteFile(void)
 
 	getDirFromFile(last.c_str(), dir);
 
-	dialog.setDirectory(tr(dir));
+	dialog.setDirectory(tr(dir.c_str()));
 
 	// Check config option to use native file dialog or not
 	g_config->getOption("SDL.UseNativeFileDialog", &useNativeFileDialogVal);

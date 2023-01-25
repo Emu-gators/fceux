@@ -41,6 +41,7 @@ if(WIN32)
      add_definitions( -DMSVC -D_CRT_SECURE_NO_WARNINGS )
      add_definitions( -D__SDL__  -D__QT_DRIVER__  -DQT_DEPRECATED_WARNINGS )
      add_definitions( -DFCEUDEF_DEBUGGER )
+     add_definitions( /wd4267 /wd4244 /wd4018 )
      include_directories( ${SDL_INSTALL_PREFIX}/SDL2/include )
      include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/drivers/win/zlib )
      set( OPENGL_LDFLAGS  OpenGL::GL )
@@ -346,6 +347,7 @@ set(SRC_CORE
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/32.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/33.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/34.cpp
+  	${CMAKE_CURRENT_SOURCE_DIR}/boards/354.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/36.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/3d-block.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/40.cpp
@@ -396,6 +398,7 @@ set(SRC_CORE
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/cheapocabra.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/cityfighter.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/coolboy.cpp
+  	${CMAKE_CURRENT_SOURCE_DIR}/boards/coolgirl.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/dance2000.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/datalatch.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/dream.cpp
@@ -467,6 +470,7 @@ set(SRC_CORE
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/vrc7.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/vrc7p.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/boards/yoko.cpp
+  	${CMAKE_CURRENT_SOURCE_DIR}/boards/inx007t.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/input/arkanoid.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/input/bworld.cpp
   	${CMAKE_CURRENT_SOURCE_DIR}/input/cursor.cpp

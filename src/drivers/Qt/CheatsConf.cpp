@@ -755,7 +755,7 @@ void GuiCheatsDialog_t::openCheatFile(void)
 	int ret, useNativeFileDialogVal;
 	QString filename;
 	std::string last;
-	char dir[512];
+	std::string dir;
 	QFileDialog dialog(this, tr("Open Cheat File"));
 
 	dialog.setFileMode(QFileDialog::ExistingFile);
@@ -770,7 +770,7 @@ void GuiCheatsDialog_t::openCheatFile(void)
 
 	getDirFromFile(last.c_str(), dir);
 
-	dialog.setDirectory(tr(dir));
+	dialog.setDirectory(tr(dir.c_str()));
 
 	// Check config option to use native file dialog or not
 	g_config->getOption("SDL.UseNativeFileDialog", &useNativeFileDialogVal);
@@ -819,7 +819,7 @@ void GuiCheatsDialog_t::saveCheatFile(void)
 	FILE *fp;
 	int ret, useNativeFileDialogVal;
 	QString filename;
-	char dir[512];
+	char dir[4096];
 	QFileDialog dialog(this, tr("Save Cheat File"));
 
 	dialog.setFileMode(QFileDialog::AnyFile);

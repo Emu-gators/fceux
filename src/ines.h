@@ -25,6 +25,8 @@
 #include <string.h>
 #include <map>
 
+#include "cart.h"
+
 struct TMasterRomInfo
 {
 	uint64 md5lower;
@@ -46,26 +48,27 @@ extern uint8 *ExtraNTARAM;
 extern uint8 **VPageR;
 extern int iNesSave(void); //bbit Edited: line added
 extern int iNesSaveAs(const char* name);
-extern char LoadedRomFName[2048]; //bbit Edited: line added
-extern char LoadedRomFNamePatchToUse[2048];
+extern char LoadedRomFName[4096]; //bbit Edited: line added
+extern char LoadedRomFNamePatchToUse[4096];
 extern char *iNesShortFName(void);
 extern const TMasterRomInfo* MasterRomInfo;
 extern TMasterRomInfoParams MasterRomInfoParams;
 
 //mbg merge 7/19/06 changed to c++ decl format
 struct iNES_HEADER {
-	char ID[4]; /*NES^Z*/        // 0-3
-	uint8 ROM_size;              // 4
-	uint8 VROM_size;             // 5
-	uint8 ROM_type;              // 6
-	uint8 ROM_type2;             // 7
-	uint8 ROM_type3;             // 8
-	uint8 Upper_ROM_VROM_size;   // 9
-	uint8 RAM_size;              // 10
-	uint8 VRAM_size;             // 11
-	uint8 TV_system;             // 12
-	uint8 VS_hardware;           // 13
-	uint8 reserved[2];           // 14, 15
+	char ID[4]; /*NES^Z*/		// 0-3
+	uint8 ROM_size;				// 4
+	uint8 VROM_size;			// 5
+	uint8 ROM_type;				// 6
+	uint8 ROM_type2;			// 7
+	uint8 ROM_type3;			// 8
+	uint8 Upper_ROM_VROM_size;	// 9
+	uint8 RAM_size;				// 10
+	uint8 VRAM_size;			// 11
+	uint8 TV_system;			// 12
+	uint8 VS_hardware;			// 13
+	uint8 misc_roms;			// 14
+	uint8 expansion;			// 15
 
 	void cleanup()
 	{
@@ -271,7 +274,11 @@ void Mapper250_Init(CartInfo *);
 void Mapper252_Init(CartInfo *);
 void Mapper253_Init(CartInfo *);
 void Mapper254_Init(CartInfo *);
+void Mapper255_Init(CartInfo *);
+void Mapper354_Init(CartInfo *);
 void Mapper406_Init(CartInfo *);
+
+void INX_007T_Init(CartInfo* info);
 
 typedef struct {
 	const char *name;

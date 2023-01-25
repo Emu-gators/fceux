@@ -295,11 +295,14 @@ int getHotKeyConfig( int i, const char **nameOut, const char **keySeqOut, const 
 		case HK_SELECT_STATE_PREV:
 			name = "SelectStatePrev"; keySeq = ""; title = "Select Previous State Slot"; group = "State";
 		break;
+		case HK_VOLUME_MUTE:
+			name = "VolumeMute"; keySeq = ""; title = "Sound Volume Mute"; group = "Sound";
+		break;
 		case HK_VOLUME_DOWN:
-			name = "VolumeDown"; keySeq = "";
+			name = "VolumeDown"; keySeq = ""; title = "Sound Volume Down"; group = "Sound";
 		break;
 		case HK_VOLUME_UP:
-			name = "VolumeUp"; keySeq = "";
+			name = "VolumeUp"; keySeq = ""; title = "Sound Volume Up"; group = "Sound";
 		break;
 		case HK_FKB_ENABLE:
 			name = "FKB_Enable"; keySeq = "ScrollLock"; title = "Toggle Family Keyboard Enable";
@@ -429,7 +432,8 @@ CreateDirs(const std::string &dir)
 static void
 GetBaseDirectory(std::string &dir)
 {
-	char *home = getenv("FCEUX_HOME");
+	const char *home = getenv("FCEUX_HOME");
+	const char *conf = getenv("FCEUX_CONFIG_DIR");
 
 #ifdef WIN32
 	// Windows users want base directory to be where executable resides.
@@ -450,21 +454,27 @@ GetBaseDirectory(std::string &dir)
 	}
 #endif
 
-	if (home) 
+	if (conf)
+	{
+		dir = std::string(conf);
+	}
+	else if (home) 
 	{
 		dir = std::string(home) + "/.fceux";
-	} else {
+	}
+	else
+	{
 #ifdef WIN32
-		home = new char[MAX_PATH + 1];
-		GetModuleFileNameA(NULL, home, MAX_PATH + 1);
+		char *exePath = new char[MAX_PATH + 1];
+		GetModuleFileNameA(NULL, exePath, MAX_PATH + 1);
 
-		char *lastBS = strrchr(home,'\\');
+		char *lastBS = strrchr(exePath,'\\');
 		if(lastBS) {
 			*lastBS = 0;
 		}
 
-		dir = std::string(home);
-		delete[] home;
+		dir = std::string(exePath);
+		delete[] exePath;
 #else
 		dir = "";
 #endif
@@ -489,6 +499,7 @@ InitConfig()
 
 	// sound options
 	config->addOption('s', "sound", "SDL.Sound", 1);
+	config->addOption("soundMute", "SDL.Sound.Mute", 0);
 	config->addOption("volume", "SDL.Sound.Volume", 255);
 	config->addOption("trianglevol", "SDL.Sound.TriangleVolume", 255);
 	config->addOption("square1vol", "SDL.Sound.Square1Volume", 255);

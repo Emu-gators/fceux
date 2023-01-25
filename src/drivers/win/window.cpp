@@ -1079,12 +1079,12 @@ void CloseGame()
 
 bool ALoad(const char *nameo, char* innerFilename, bool silent)
 {
-	FCEUFILE* patchTrial = FCEU_fopen(nameo,nullptr,"rb",nullptr,-1);
+	FILE* patchTrial = fopen(nameo, "rb");
 	if(patchTrial)
 	{
 		char sig[10] = {0};
-		FCEU_fread(sig,1,5,patchTrial);
-		FCEU_fclose(patchTrial);
+		fread(sig,1,5,patchTrial);
+		fclose(patchTrial);
 		if(!strcmp(sig,"PATCH"))
 		{
 			//assuming it's a patch:
@@ -1968,6 +1968,12 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 			case MENU_INSERT_COIN:
 				FCEUI_VSUniCoin();
 				break;
+			case MENU_INSERT_COIN2:
+				FCEUI_VSUniCoin2();
+				break;
+			case MENU_SERVICE_BUTTON:
+				FCEUI_VSUniService();
+				break;
 			case MENU_INPUT_BARCODE:
 				char bbuf[32 + 1];
 				if ((CWin32InputBox::GetString("Input Barcode", "Input full 13- or 8-digit barcode to be directly send to the reader. Or input partial 12- or 7-digit number to allow the program to calculate control code automatically.", bbuf, hWnd) == IDOK)) {
@@ -2576,6 +2582,8 @@ adelikat: Outsourced this to a remappable hotkey
 		EnableMenuItem(fceumenu,MENU_EJECT_DISK,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_EJECT_DISK)?MF_ENABLED:MF_GRAYED));
 		EnableMenuItem(fceumenu,MENU_SWITCH_DISK,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_SWITCH_DISK)?MF_ENABLED:MF_GRAYED));
 		EnableMenuItem(fceumenu,MENU_INSERT_COIN,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_INSERT_COIN)?MF_ENABLED:MF_GRAYED));
+		EnableMenuItem(fceumenu,MENU_INSERT_COIN2, MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_INSERT_COIN) ? MF_ENABLED : MF_GRAYED));
+		EnableMenuItem(fceumenu,MENU_SERVICE_BUTTON, MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_INSERT_COIN) ? MF_ENABLED : MF_GRAYED));
 		EnableMenuItem(fceumenu,MENU_INPUT_BARCODE,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_INPUT_BARCODE)?MF_ENABLED:MF_GRAYED));
 		EnableMenuItem(fceumenu,MENU_TASEDITOR,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_TASEDITOR)?MF_ENABLED:MF_GRAYED));
 		EnableMenuItem(fceumenu,MENU_CLOSE_FILE,MF_BYCOMMAND | (FCEU_IsValidUI(FCEUI_CLOSEGAME) && GameInfo ?MF_ENABLED:MF_GRAYED));
@@ -3030,8 +3038,12 @@ struct HOTKEYMENUINDEX hotkeyMenuIndexes[] = {
 	{ MENU_EJECT_DISK,EMUCMD_FDS_EJECT_INSERT },
 	// "&Switch Disk Side"
 	{ MENU_SWITCH_DISK,EMUCMD_FDS_SIDE_SELECT },
-	// "&Insert Coin"
+	// "&Insert Coin #1"
 	{ MENU_INSERT_COIN,EMUCMD_VSUNI_COIN },
+	// "I&nsert Coin #2"
+	{ MENU_INSERT_COIN2,EMUCMD_VSUNI_COIN_2 },
+	// "Ser&vice Button"
+	{ MENU_SERVICE_BUTTON,EMUCMD_VSUNI_SERVICE_BUTTON },
 	// "Speed &Up"
 	{ ID_NES_SPEEDUP,EMUCMD_SPEED_FASTER },
 	// "Slow &Down"
@@ -3207,7 +3219,7 @@ void SaveMovieAs()
 	ofn.hInstance=fceu_hInstance;
 	ofn.lpstrTitle="Save Movie as...";
 	ofn.lpstrFilter=filter;
-	strcpy(nameo,curMovieFilename);
+	strcpy(nameo,curMovieFilename.c_str());
 	ofn.lpstrFile=nameo;
 	ofn.lpstrDefExt="fm2";
 	ofn.nMaxFile=256;

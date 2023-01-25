@@ -577,16 +577,16 @@ void TraceLoggerDialog_t::openLogFile(void)
 
 	if (romFile != NULL)
 	{
-		char dir[1024];
+		std::string dir;
 		getDirFromFile(romFile, dir);
-		dialog.setDirectory(tr(dir));
+		dialog.setDirectory(tr(dir.c_str()));
 	}
 
 	if ( logFilePath.size() != 0 )
 	{
-		char dir[1024];
+		std::string dir;
 		getDirFromFile(logFilePath.c_str(), dir);
-		dialog.setDirectory(tr(dir));
+		dialog.setDirectory(tr(dir.c_str()));
 	}
 
 	// Check config option to use native file dialog or not
