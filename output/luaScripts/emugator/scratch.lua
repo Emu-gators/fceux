@@ -1,8 +1,99 @@
-local gd = require("gd")
+--GUI
+-- Load the wxLua module
+package.cpath = package.cpath..";./?.dll;./?.so;../lib/?.so;../lib/vc_dll/?.dll;../lib/bcc_dll/?.dll;../lib/mingw_dll/?.dll;"
+require("wx")
 
-while(true) do
+frame = nil
 
-	local im = gd.createFromPng("gui/famicom.png")
-	gui.gdoverlay(0, 3, im:gdStr()) 
-	emugator.yieldwithflag()
+-- paint event handler for the frame that's called by wxEVT_PAINT
+function OnPaint(event)
+    -- must always create a wxPaintDC in a wxEVT_PAINT handler
+    local dc = wx.wxPaintDC(panel)
+    -- call some drawing functions
+    dc:DrawRectangle(10, 10, 300, 300);
+    dc:DrawRoundedRectangle(20, 20, 280, 280, 20);
+    dc:DrawEllipse(30, 30, 260, 260);
+    dc:DrawText("A test string", 50, 150);
+
+
+   --local fileName = wx.wxString("../../../emugator/ROM_Carts/Crisis Force (Japan).jpg")
+    --local img = wx.wxImage(50, 50)
+    --img = wx.wxImage(fileName)
+    --local bmp = wx.wxBitmap(img)
+    --dc:DrawBitmap(bmp, 10, 10, 0)
+
+    -- the paint DC will be automatically destroyed by the garbage collector,
+    -- however on Windows 9x/Me this may be too late (DC's are precious resource)
+    -- so delete it here
+    dc:delete() -- ALWAYS delete() any wxDCs created when done
+end
+
+-- Create a function to encapulate the code, not necessary, but it makes it
+--  easier to debug in some cases.
+function launchGUI()
+
+    -- create the wxFrame window
+    frame = wx.wxFrame( wx.NULL,            -- no parent for toplevel windows
+                        wx.wxID_ANY,          -- don't need a wxWindow ID
+                        "wxLua Minimal Demo", -- caption on the frame
+                        wx.wxDefaultPosition, -- let system place the frame
+                        wx.wxSize(720, 720),  -- set the size of the frame
+                        wx.wxDEFAULT_FRAME_STYLE ) -- use default frame styles
+
+    wx.wxInitAllImageHandlers()
+
+    -- create a single child window, wxWidgets will set the size to fill frame
+    panel = wx.wxPanel(frame, wx.wxID_ANY)
+
+    -- connect the paint event handler function with the paint event
+    panel:Connect(wx.wxEVT_PAINT, OnPaint)
+
+    -- create a simple file menu
+    local fileMenu = wx.wxMenu()
+    fileMenu:Append(wx.wxID_EXIT, "E&xit", "Quit the program")
+
+    -- create a simple help menu
+    local helpMenu = wx.wxMenu()
+    helpMenu:Append(wx.wxID_ABOUT, "&About", "About the wxLua Minimal Application")
+
+    -- create a menu bar and append the file and help menus
+    local menuBar = wx.wxMenuBar()
+    menuBar:Append(fileMenu, "&File")
+    menuBar:Append(helpMenu, "&Help")
+
+    -- attach the menu bar into the frame
+    frame:SetMenuBar(menuBar)
+
+    -- create a simple status bar
+    frame:CreateStatusBar(1)
+    frame:SetStatusText("Welcome to wxLua.")
+
+    -- connect the selection event of the exit menu item to an
+    -- event handler that closes the window
+    frame:Connect(wx.wxID_EXIT, wx.wxEVT_COMMAND_MENU_SELECTED,
+                  function (event) frame:Close(true) end )
+
+    -- connect the selection event of the about menu item
+    frame:Connect(wx.wxID_ABOUT, wx.wxEVT_COMMAND_MENU_SELECTED,
+        function (event)
+            wx.wxMessageBox('This is the "About" dialog of the Minimal wxLua sample.\n'..
+                            wxlua.wxLUA_VERSION_STRING.." built with "..wx.wxVERSION_STRING,
+                            "About wxLua",
+                            wx.wxOK + wx.wxICON_INFORMATION,
+                            frame)
+        end )
+
+    -- show the frame window
+    frame:Show(true)
+end
+
+launchGUI()
+-- Call wx.wxGetApp():MainLoop() last to start the wxWidgets event loop,
+-- otherwise the wxLua program will exit immediately.
+-- Does nothing if running from wxLua, wxLuaFreeze, or wxLuaEdit since the
+-- MainLoop is already running or will be started by the C++ program.
+wx.wxGetApp():MainLoop()
+
+while(1) do
+    emugator.yieldwithflag();
 end
