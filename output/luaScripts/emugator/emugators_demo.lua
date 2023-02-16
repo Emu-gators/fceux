@@ -2,6 +2,7 @@
 --loaded game. i.e. fix the cream not white issue observed with loz2/smb setup!!
 
 local gd = require("gd")
+local cd = require("cd")
 
 emu.print("Go Gators!")
 MAX_SCREEN_WIDTH = 256
@@ -30,13 +31,28 @@ local lmbWasPressed = false
 
 local FAMICOM_Roms = {}
 FAMICOM_Roms[1] = {}
-local romDir = [[../../../emugator/ROMs/]]
-local romCartDir = [[../../../emugator/ROM_Carts/]]
+local romDir = [[../../../../emugator/ROMs/]]
+local romCartDir = [[../../../../emugator/ROM_Carts/]]
+local scanLine = gd.createFromPng("gui/scan.png"):gdStr()
+local toggleCRT = true;
 
 --Find ROMS
 local totalRoms = 0
 local pageNumber = 1
 local pageSlot = 1
+
+local clock = os.clock
+function sleep(n)  -- seconds
+  local t0 = clock()
+  while clock() - t0 <= n do end
+end
+-- warning: clock can eventually wrap around for sufficiently large n
+-- (whose value is platform dependent).  Even for n == 1, clock() - t0
+-- might become negative on the second that clock wraps. Credit: http://lua-users.org/wiki/SleepFunction
+
+
+
+
 
 for rom in io.popen([[dir "]] ..romDir.. [[" /b]]):lines() do
 	local dot = nil
@@ -208,5 +224,20 @@ while(true) do
 			wasClicked = false
 			emu.frameadvance()
 		end
+
+		
+		--print(scanLine)
+		local keyPress = input.get()
+
+		for i in pairs(keyPress) do
+			if (i == "insert") then
+				toggleCRT = not toggleCRT
+				sleep(0.2)
+			end
+		end
+		if toggleCRT then
+			gui.drawimage(scanLine,0.3)
+		end
 	end
+	
 end
