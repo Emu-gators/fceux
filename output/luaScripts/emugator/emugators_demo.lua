@@ -7,8 +7,8 @@ emu.print("Go Gators!")
 MAX_SCREEN_WIDTH = 256
 MAX_SCREEN_HEIGHT = 240
 MAX_PER_PAGE = 6
-CART_WIDTH = 30
-CART_HEIGHT = 30
+CART_WIDTH = 200
+CART_HEIGHT = 200
 DRAWER_OFFSET_X = 20
 DRAWER_OFFSET_Y = 75
 DRAWER_BUFFER_X = 10
@@ -30,8 +30,8 @@ local lmbWasPressed = false
 
 local FAMICOM_Roms = {}
 FAMICOM_Roms[1] = {}
-local romDir = [[../../../emugator/ROMs/]]
-local romCartDir = [[../../../emugator/ROM_Carts/]]
+local romDir = [[../../../../emugator/ROMs/]]
+local romCartDir = [[../../../../emugator/ROM_Carts/]]
 
 --GUI
 -- Load the wxLua module
@@ -40,22 +40,147 @@ require("wx")
 
 frame = nil
 
+--Find ROMS
+local totalRoms = 0
+local pageNumber = 1
+local pageSlot = 1
+
+for rom in io.popen([[dir "]] ..romDir.. [[" /b]]):lines() do
+	local dot = nil
+	local dotPos = 0
+	while(true) do
+		dotPos = string.find(rom, "%.", dotPos + 1)
+		if(dotPos == nil) then break end
+		dot = dotPos
+	end
+	ext = nil
+	if(dot ~= nil) then
+		ext = string.sub(rom, dot, -1)
+	end
+
+	if(ext == ".nes" or ext == ".fds") then
+		print("found: " ..rom)
+		if(FAMICOM_Roms[pageNumber] == nil) then
+			FAMICOM_Roms[pageNumber] = {}
+		end
+
+		local xpos = DRAWER_OFFSET_X + DRAWER_BUFFER_X*(math.floor(((pageSlot-1)%2)) + 1) + math.floor(((pageSlot-1)%2))*CART_WIDTH
+		local ypos = DRAWER_OFFSET_Y + DRAWER_BUFFER_Y*(math.floor(((pageSlot-1)/2)) + 1) + math.floor(((pageSlot-1)/2))*CART_HEIGHT
+		local name = string.sub(rom, 1, dot-1)
+		local srcImg = wx.wxImage(romCartDir ..name.. [[.jpg]])
+
+		wx.wxBitmap(romCartDir ..name.. [[.jpg]])
+
+		if(srcImg == nil) then
+			srcImg =wx.wxImage(romCartDir ..name.. [[.jpeg]])
+		end
+
+		if(srcImg == nil) then
+			srcImg = wx.wxImage(romCartDir ..name.. [[.png]])
+		end
+
+		if(srcImg == nil) then
+			srcImg = wx.wxImage(CART_WIDTH, CART_HEIGHT, false)
+		else
+			srcImg:Rescale(CART_WIDTH, CART_HEIGHT)
+		end
+
+		FAMICOM_Roms[pageNumber][pageSlot] = {rom = rom, image = srcImg, name = name, x = xpos, y = ypos, slot = pageSlot, isSelected = false}
+		pageSlot = pageSlot + 1
+		if(pageSlot > MAX_PER_PAGE) then
+			pageSlot = 1
+			pageNumber = pageNumber + 1
+		end
+		totalRoms = totalRoms + 1
+	end
+end
+
+if(pageSlot == 1) then
+	pageNumber = pageNumber - 1
+end
+
 -- paint event handler for the frame that's called by wxEVT_PAINT
 function OnPaint(event)
     -- must always create a wxPaintDC in a wxEVT_PAINT handler
     local dc = wx.wxPaintDC(panel)
     -- call some drawing functions
 
-    dc:DrawText("Welcome to the New GUI!", 50, 150);
-	dc:DrawText("Eventually all the elements of the old GUI will be transfered over here", 50, 175);
-	dc:DrawText("This is just a placeholder to prove proof of concept of the new GUI for the Alpha build", 50, 200);
-	dc:DrawText("Please exit this window to continue", 50, 225);
+    --dc:DrawText("Welcome to the New GUI!", 50, 150);
+	--dc:DrawText("Eventually all the elements of the old GUI will be transfered over here", 50, 175);
+	--dc:DrawText("This is just a placeholder to prove proof of concept of the new GUI for the Alpha build", 50, 200);
+	--dc:DrawText("Please exit this window to continue", 50, 225);
 
-   --local fileName = wx.wxString("../../../emugator/ROM_Carts/Crisis Force (Japan).jpg")
-    --local img = wx.wxImage(50, 50)
-    --img = wx.wxImage(fileName)
-    --local bmp = wx.wxBitmap(img)
-    --dc:DrawBitmap(bmp, 10, 10, 0)
+	wasClicked = false
+
+	--draw gui background
+	--gui.rect(0, 0, MAX_SCREEN_WIDTH-1, MAX_SCREEN_HEIGHT-1,"grey")   
+	local srcBm = wx.wxBitmap("gui/DrJMicroMuseum.png")
+	dc:DrawBitmap(srcBm, 0, 0, true)
+
+	--gui.rect(DRAWER_OFFSET_X, DRAWER_OFFSET_Y, DRAWER_OFFSET_X + DRAWER_WIDTH, DRAWER_OFFSET_Y + DRAWER_HEIGHT + 5,"blue", "white") 
+	dc:DrawText(currPage.. "/" ..pageNumber, DRAWER_OFFSET_X + CART_WIDTH + DRAWER_BUFFER_X - 3, DRAWER_OFFSET_Y + DRAWER_HEIGHT - 5)
+	--
+	local leftArrow = wx.wxImage("gui/arrow.png")
+	local rightArrow = wx.wxImage("gui/arrow.png")
+	rightArrow:Rotate(90, wx.wxPoint(rightArrow:GetWidth()/2, rightArrow:GetHeight()/2))
+	dc:DrawBitmap(wx.wxBitmap(rightArrow), PAGE_RIGHT.x, PAGE_RIGHT.y, true)
+	dc:DrawBitmap(wx.wxBitmap(leftArrow), PAGE_LEFT.x, PAGE_LEFT.y, true)
+
+	--Draw console
+	dc:DrawBitmap(wx.wxBitmap("gui/famicom.png"), console.x1 + 10, console.y1 + 30, true)
+	
+	--Load Cartridge if dropped on Console
+	--if (inpt.leftclick == nil) then
+	--	if((inpt.xmouse > console.x1) and (inpt.xmouse < console.x2) and (inpt.ymouse > console.y1) and (inpt.ymouse < console.y2) and selectedRom.selected ~= nil) then
+	--		emu.loadrom(romDir ..FAMICOM_Roms[currPage][selectedRom.selected].rom)
+	--	elseif((inpt.xmouse > PAGE_LEFT.x) and (inpt.xmouse < PAGE_LEFT.x + leftArrow:sizeX()) and (inpt.ymouse > PAGE_LEFT.y) and (inpt.ymouse < PAGE_LEFT.y + leftArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
+	--		if(currPage > 1) then
+	--			currPage = currPage - 1
+	--		end
+	--	elseif((inpt.xmouse > PAGE_RIGHT.x) and (inpt.xmouse < PAGE_RIGHT.x + rightArrow:sizeX()) and (inpt.ymouse > PAGE_RIGHT.y) and (inpt.ymouse < PAGE_RIGHT.y + rightArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
+	--		if(currPage < pageNumber) then
+	--			currPage = currPage + 1
+	--		end
+	--	end
+	--
+	--	if(selectedRom.selected ~= nil) then
+	--		FAMICOM_Roms[currPage][selectedRom.selected].isSelected = false
+	--		selectedRom.selected = nil
+	--	end
+	--end
+	
+	--Draw Cartridges
+   for _, rom in pairs(FAMICOM_Roms[currPage]) do
+		if(rom.isSelected == false) then
+			dc:DrawBitmap(wx.wxBitmap(rom.image), rom.x, rom.y, true)
+		end
+	end
+	
+	--if (selectedRom.selected == nil) then
+	--	local index = 0
+	--	for _, rom in pairs(FAMICOM_Roms[currPage]) do
+	--		if ((inpt.xmouse > rom.x) and (inpt.xmouse < (rom.x+CART_WIDTH)) and (inpt.ymouse > rom.y) and (inpt.ymouse < (rom.y+CART_HEIGHT))) then
+	--			gui.text(inpt.xmouse, inpt.ymouse, rom.name)
+	--			if(inpt.leftclick and lmbWasPressed == false) then
+	--				selectedRom.selected = rom.slot
+	--				selectedRom.x = inpt.xmouse
+	--				selectedRom.y = inpt.ymouse
+	--				rom.isSelected = true
+	--				break
+	--			end
+	--		end
+	--	end
+	--else
+	
+	--	local gdstr = FAMICOM_Roms[currPage][selectedRom.selected].image:gdStr()
+	--	gui.gdoverlay(inpt.xmouse + (FAMICOM_Roms[currPage][selectedRom.selected].x - selectedRom.x), inpt.ymouse + (FAMICOM_Roms[currPage][selectedRom.selected].y - selectedRom.y), gdstr)
+	--end
+	--
+	--if(selectedRom.selected ~= nil) then
+	--	gui.text(inpt.xmouse, inpt.ymouse, FAMICOM_Roms[currPage][selectedRom.selected].name)
+	--end
+	--
+	--lmbWasPressed = inpt.leftclick ~= nil
 
     -- the paint DC will be automatically destroyed by the garbage collector,
     -- however on Windows 9x/Me this may be too late (DC's are precious resource)
@@ -74,6 +199,8 @@ function launchGUI()
                         wx.wxDefaultPosition, -- let system place the frame
                         wx.wxSize(900, 900),  -- set the size of the frame
                         wx.wxDEFAULT_FRAME_STYLE ) -- use default frame styles
+
+	frame:SetBackgroundColour(wx.wxLIGHT_GREY)
 
     wx.wxInitAllImageHandlers()
 
@@ -120,64 +247,6 @@ function launchGUI()
 
     -- show the frame window
     frame:Show(true)
-end
-
---Find ROMS
-local totalRoms = 0
-local pageNumber = 1
-local pageSlot = 1
-
-for rom in io.popen([[dir "]] ..romDir.. [[" /b]]):lines() do
-	local dot = nil
-	local dotPos = 0
-	while(true) do
-		dotPos = string.find(rom, "%.", dotPos + 1)
-		if(dotPos == nil) then break end
-		dot = dotPos
-	end
-	ext = nil
-	if(dot ~= nil) then
-		ext = string.sub(rom, dot, -1)
-	end
-
-	if(ext == ".nes" or ext == ".fds") then
-		print("found: " ..rom)
-		if(FAMICOM_Roms[pageNumber] == nil) then
-			FAMICOM_Roms[pageNumber] = {}
-		end
-
-		local xpos = DRAWER_OFFSET_X + DRAWER_BUFFER_X*(math.floor(((pageSlot-1)%2)) + 1) + math.floor(((pageSlot-1)%2))*CART_WIDTH
-		local ypos = DRAWER_OFFSET_Y + DRAWER_BUFFER_Y*(math.floor(((pageSlot-1)/2)) + 1) + math.floor(((pageSlot-1)/2))*CART_HEIGHT
-		local name = string.sub(rom, 1, dot-1)
-		local dstImg = gd.create(CART_WIDTH, CART_HEIGHT)
-		local srcImg = gd.createFromJpeg(romCartDir ..name.. [[.jpg]])
-
-		if(srcImg == nil) then
-			srcImg = gd.createFromJpeg(romCartDir ..name.. [[.jpeg]])
-		end
-
-		if(srcImg == nil) then
-			srcImg = gd.createFromPng(romCartDir ..name.. [[.png]])
-		end
-
-		if(srcImg == nil) then
-			dstImg:filledRectangle(0, 0, CART_WIDTH-1, CART_HEIGHT-1, 255)
-		else
-			dstImg:copyResized(srcImg, 0, 0, 0, 0, CART_WIDTH, CART_HEIGHT, srcImg:sizeX(), srcImg:sizeY())
-		end
-
-		FAMICOM_Roms[pageNumber][pageSlot] = {rom = rom, image = dstImg, name = name, x = xpos, y = ypos, slot = pageSlot, isSelected = false}
-		pageSlot = pageSlot + 1
-		if(pageSlot > MAX_PER_PAGE) then
-			pageSlot = 1
-			pageNumber = pageNumber + 1
-		end
-		totalRoms = totalRoms + 1
-	end
-end
-
-if(pageSlot == 1) then
-	pageNumber = pageNumber - 1
 end
 
 --Launch temp gui
