@@ -30,6 +30,7 @@ local lmbWasPressed = false
 
 local FAMICOM_Roms = {}
 FAMICOM_Roms[1] = {}
+
 local romDir = [[../../../../emugator/ROMs/]]
 local romCartDir = [[../../../../emugator/ROM_Carts/]]
 
@@ -184,14 +185,33 @@ while(true) do
 
 		emugator.yieldwithflag() -- call this if you want the script to run without emulation (game running)
 	else
-		gui.rect(unloadButton.x1, unloadButton.y1, unloadButton.x2, unloadButton.y2, "blue", "white")
-		gui.text(unloadButton.x1+2, unloadButton.y1+2, "Unload")
-
-		gui.rect(switchButton.x1, switchButton.y1, switchButton.x2, switchButton.y2, "blue", "white")
-		gui.text(switchButton.x1+2, switchButton.y1+2, "Switch")
-
-		gui.rect(ejectInsertButton.x1, ejectInsertButton.y1, ejectInsertButton.x2, ejectInsertButton.y2, "blue", "white")
-		gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
+		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2)) then
+			gui.opacity(1.0)	
+			gui.rect(unloadButton.x1, unloadButton.y1, unloadButton.x2, unloadButton.y2, "blue", "white")
+			gui.text(unloadButton.x1+2, unloadButton.y1+2, "Unload")
+		else
+			gui.opacity(0.25)
+			gui.rect(unloadButton.x1, unloadButton.y1, unloadButton.x2, unloadButton.y2, "blue", "white")
+			gui.text(unloadButton.x1+2, unloadButton.y1+2, "Unload")
+		end
+		if ((inpt.xmouse > switchButton.x1) and (inpt.xmouse < switchButton.x2) and (inpt.ymouse > switchButton.y1) and (inpt.ymouse < switchButton.y2)) then
+			gui.opacity(1.0)
+			gui.rect(switchButton.x1, switchButton.y1, switchButton.x2, switchButton.y2, "blue", "white")
+			gui.text(switchButton.x1+2, switchButton.y1+2, "Switch")
+		else
+			gui.opacity(0.25)
+			gui.rect(switchButton.x1, switchButton.y1, switchButton.x2, switchButton.y2, "blue", "white")
+			gui.text(switchButton.x1+2, switchButton.y1+2, "Switch")
+		end
+		if ((inpt.xmouse > ejectInsertButton.x1) and (inpt.xmouse < ejectInsertButton.x2) and (inpt.ymouse > ejectInsertButton.y1) and (inpt.ymouse < ejectInsertButton.y2)) then
+			gui.opacity(1.0)
+			gui.rect(ejectInsertButton.x1, ejectInsertButton.y1, ejectInsertButton.x2, ejectInsertButton.y2, "blue", "white")
+			gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
+		else
+			gui.opacity(0.25)
+			gui.rect(ejectInsertButton.x1, ejectInsertButton.y1, ejectInsertButton.x2, ejectInsertButton.y2, "blue", "white")
+			gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
+		end
 
 		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2) and inpt.leftclick) then
 			if (wasClicked == false) then
