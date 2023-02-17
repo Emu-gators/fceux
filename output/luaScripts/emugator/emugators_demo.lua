@@ -7,8 +7,8 @@ emu.print("Go Gators!")
 MAX_SCREEN_WIDTH = 256
 MAX_SCREEN_HEIGHT = 240
 MAX_PER_PAGE = 6
-CART_WIDTH = 200
-CART_HEIGHT = 200
+CART_WIDTH = 30
+CART_HEIGHT = 30
 DRAWER_OFFSET_X = 20
 DRAWER_OFFSET_Y = 75
 DRAWER_BUFFER_X = 10
@@ -32,13 +32,6 @@ local FAMICOM_Roms = {}
 FAMICOM_Roms[1] = {}
 local romDir = [[../../../../emugator/ROMs/]]
 local romCartDir = [[../../../../emugator/ROM_Carts/]]
-
---GUI
--- Load the wxLua module
-package.cpath = package.cpath..";./?.dll;./?.so;../lib/?.so;../lib/vc_dll/?.dll;../lib/bcc_dll/?.dll;../lib/mingw_dll/?.dll;"
-require("wx")
-
-frame = nil
 
 --Find ROMS
 local totalRoms = 0
@@ -67,25 +60,24 @@ for rom in io.popen([[dir "]] ..romDir.. [[" /b]]):lines() do
 		local xpos = DRAWER_OFFSET_X + DRAWER_BUFFER_X*(math.floor(((pageSlot-1)%2)) + 1) + math.floor(((pageSlot-1)%2))*CART_WIDTH
 		local ypos = DRAWER_OFFSET_Y + DRAWER_BUFFER_Y*(math.floor(((pageSlot-1)/2)) + 1) + math.floor(((pageSlot-1)/2))*CART_HEIGHT
 		local name = string.sub(rom, 1, dot-1)
-		local srcImg = wx.wxImage(romCartDir ..name.. [[.jpg]])
-
-		wx.wxBitmap(romCartDir ..name.. [[.jpg]])
+		local dstImg = gd.create(CART_WIDTH, CART_HEIGHT)
+		local srcImg = gd.createFromJpeg(romCartDir ..name.. [[.jpg]])
 
 		if(srcImg == nil) then
-			srcImg =wx.wxImage(romCartDir ..name.. [[.jpeg]])
+			srcImg = gd.createFromJpeg(romCartDir ..name.. [[.jpeg]])
 		end
 
 		if(srcImg == nil) then
-			srcImg = wx.wxImage(romCartDir ..name.. [[.png]])
+			srcImg = gd.createFromPng(romCartDir ..name.. [[.png]])
 		end
 
 		if(srcImg == nil) then
-			srcImg = wx.wxImage(CART_WIDTH, CART_HEIGHT, false)
+			dstImg:filledRectangle(0, 0, CART_WIDTH-1, CART_HEIGHT-1, 255)
 		else
-			srcImg:Rescale(CART_WIDTH, CART_HEIGHT)
+			dstImg:copyResized(srcImg, 0, 0, 0, 0, CART_WIDTH, CART_HEIGHT, srcImg:sizeX(), srcImg:sizeY())
 		end
 
-		FAMICOM_Roms[pageNumber][pageSlot] = {rom = rom, image = srcImg, name = name, x = xpos, y = ypos, slot = pageSlot, isSelected = false}
+		FAMICOM_Roms[pageNumber][pageSlot] = {rom = rom, image = dstImg, name = name, x = xpos, y = ypos, slot = pageSlot, isSelected = false}
 		pageSlot = pageSlot + 1
 		if(pageSlot > MAX_PER_PAGE) then
 			pageSlot = 1
@@ -98,160 +90,6 @@ end
 if(pageSlot == 1) then
 	pageNumber = pageNumber - 1
 end
-
--- paint event handler for the frame that's called by wxEVT_PAINT
-function OnPaint(event)
-    -- must always create a wxPaintDC in a wxEVT_PAINT handler
-    local dc = wx.wxPaintDC(panel)
-    -- call some drawing functions
-
-    --dc:DrawText("Welcome to the New GUI!", 50, 150);
-	--dc:DrawText("Eventually all the elements of the old GUI will be transfered over here", 50, 175);
-	--dc:DrawText("This is just a placeholder to prove proof of concept of the new GUI for the Alpha build", 50, 200);
-	--dc:DrawText("Please exit this window to continue", 50, 225);
-
-	wasClicked = false
-
-	--draw gui background
-	--gui.rect(0, 0, MAX_SCREEN_WIDTH-1, MAX_SCREEN_HEIGHT-1,"grey")   
-	local srcBm = wx.wxBitmap("gui/DrJMicroMuseum.png")
-	dc:DrawBitmap(srcBm, 0, 0, true)
-
-	--gui.rect(DRAWER_OFFSET_X, DRAWER_OFFSET_Y, DRAWER_OFFSET_X + DRAWER_WIDTH, DRAWER_OFFSET_Y + DRAWER_HEIGHT + 5,"blue", "white") 
-	dc:DrawText(currPage.. "/" ..pageNumber, DRAWER_OFFSET_X + CART_WIDTH + DRAWER_BUFFER_X - 3, DRAWER_OFFSET_Y + DRAWER_HEIGHT - 5)
-	--
-	local leftArrow = wx.wxImage("gui/arrow.png")
-	local rightArrow = wx.wxImage("gui/arrow.png")
-	rightArrow:Rotate(90, wx.wxPoint(rightArrow:GetWidth()/2, rightArrow:GetHeight()/2))
-	dc:DrawBitmap(wx.wxBitmap(rightArrow), PAGE_RIGHT.x, PAGE_RIGHT.y, true)
-	dc:DrawBitmap(wx.wxBitmap(leftArrow), PAGE_LEFT.x, PAGE_LEFT.y, true)
-
-	--Draw console
-	dc:DrawBitmap(wx.wxBitmap("gui/famicom.png"), console.x1 + 10, console.y1 + 30, true)
-	
-	--Load Cartridge if dropped on Console
-	--if (inpt.leftclick == nil) then
-	--	if((inpt.xmouse > console.x1) and (inpt.xmouse < console.x2) and (inpt.ymouse > console.y1) and (inpt.ymouse < console.y2) and selectedRom.selected ~= nil) then
-	--		emu.loadrom(romDir ..FAMICOM_Roms[currPage][selectedRom.selected].rom)
-	--	elseif((inpt.xmouse > PAGE_LEFT.x) and (inpt.xmouse < PAGE_LEFT.x + leftArrow:sizeX()) and (inpt.ymouse > PAGE_LEFT.y) and (inpt.ymouse < PAGE_LEFT.y + leftArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-	--		if(currPage > 1) then
-	--			currPage = currPage - 1
-	--		end
-	--	elseif((inpt.xmouse > PAGE_RIGHT.x) and (inpt.xmouse < PAGE_RIGHT.x + rightArrow:sizeX()) and (inpt.ymouse > PAGE_RIGHT.y) and (inpt.ymouse < PAGE_RIGHT.y + rightArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-	--		if(currPage < pageNumber) then
-	--			currPage = currPage + 1
-	--		end
-	--	end
-	--
-	--	if(selectedRom.selected ~= nil) then
-	--		FAMICOM_Roms[currPage][selectedRom.selected].isSelected = false
-	--		selectedRom.selected = nil
-	--	end
-	--end
-	
-	--Draw Cartridges
-   for _, rom in pairs(FAMICOM_Roms[currPage]) do
-		if(rom.isSelected == false) then
-			dc:DrawBitmap(wx.wxBitmap(rom.image), rom.x, rom.y, true)
-		end
-	end
-	
-	--if (selectedRom.selected == nil) then
-	--	local index = 0
-	--	for _, rom in pairs(FAMICOM_Roms[currPage]) do
-	--		if ((inpt.xmouse > rom.x) and (inpt.xmouse < (rom.x+CART_WIDTH)) and (inpt.ymouse > rom.y) and (inpt.ymouse < (rom.y+CART_HEIGHT))) then
-	--			gui.text(inpt.xmouse, inpt.ymouse, rom.name)
-	--			if(inpt.leftclick and lmbWasPressed == false) then
-	--				selectedRom.selected = rom.slot
-	--				selectedRom.x = inpt.xmouse
-	--				selectedRom.y = inpt.ymouse
-	--				rom.isSelected = true
-	--				break
-	--			end
-	--		end
-	--	end
-	--else
-	
-	--	local gdstr = FAMICOM_Roms[currPage][selectedRom.selected].image:gdStr()
-	--	gui.gdoverlay(inpt.xmouse + (FAMICOM_Roms[currPage][selectedRom.selected].x - selectedRom.x), inpt.ymouse + (FAMICOM_Roms[currPage][selectedRom.selected].y - selectedRom.y), gdstr)
-	--end
-	--
-	--if(selectedRom.selected ~= nil) then
-	--	gui.text(inpt.xmouse, inpt.ymouse, FAMICOM_Roms[currPage][selectedRom.selected].name)
-	--end
-	--
-	--lmbWasPressed = inpt.leftclick ~= nil
-
-    -- the paint DC will be automatically destroyed by the garbage collector,
-    -- however on Windows 9x/Me this may be too late (DC's are precious resource)
-    -- so delete it here
-    dc:delete() -- ALWAYS delete() any wxDCs created when done
-end
-
--- Create a function to encapulate the code, not necessary, but it makes it
---  easier to debug in some cases.
-function launchGUI()
-
-    -- create the wxFrame window
-    frame = wx.wxFrame( wx.NULL,            -- no parent for toplevel windows
-                        wx.wxID_ANY,          -- don't need a wxWindow ID
-                        "wxLua Minimal Demo", -- caption on the frame
-                        wx.wxDefaultPosition, -- let system place the frame
-                        wx.wxSize(900, 900),  -- set the size of the frame
-                        wx.wxDEFAULT_FRAME_STYLE ) -- use default frame styles
-
-	frame:SetBackgroundColour(wx.wxLIGHT_GREY)
-
-    wx.wxInitAllImageHandlers()
-
-    -- create a single child window, wxWidgets will set the size to fill frame
-    panel = wx.wxPanel(frame, wx.wxID_ANY)
-
-    -- connect the paint event handler function with the paint event
-    panel:Connect(wx.wxEVT_PAINT, OnPaint)
-
-    -- create a simple file menu
-    local fileMenu = wx.wxMenu()
-    fileMenu:Append(wx.wxID_EXIT, "E&xit", "Quit the program")
-
-    -- create a simple help menu
-    local helpMenu = wx.wxMenu()
-    helpMenu:Append(wx.wxID_ABOUT, "&About", "About the wxLua Minimal Application")
-
-    -- create a menu bar and append the file and help menus
-    local menuBar = wx.wxMenuBar()
-    menuBar:Append(fileMenu, "&File")
-    menuBar:Append(helpMenu, "&Help")
-
-    -- attach the menu bar into the frame
-    frame:SetMenuBar(menuBar)
-
-    -- create a simple status bar
-    frame:CreateStatusBar(1)
-    frame:SetStatusText("Welcome to wxLua.")
-
-    -- connect the selection event of the exit menu item to an
-    -- event handler that closes the window
-    frame:Connect(wx.wxID_EXIT, wx.wxEVT_COMMAND_MENU_SELECTED,
-                  function (event) frame:Close(true) end )
-
-    -- connect the selection event of the about menu item
-    frame:Connect(wx.wxID_ABOUT, wx.wxEVT_COMMAND_MENU_SELECTED,
-        function (event)
-            wx.wxMessageBox('This is the "About" dialog of the Minimal wxLua sample.\n'..
-                            wxlua.wxLUA_VERSION_STRING.." built with "..wx.wxVERSION_STRING,
-                            "About wxLua",
-                            wx.wxOK + wx.wxICON_INFORMATION,
-                            frame)
-        end )
-
-    -- show the frame window
-    frame:Show(true)
-end
-
---Launch temp gui
-launchGUI()
-wx.wxGetApp():MainLoop()
 
 --Main Loop
 while(true) do 
