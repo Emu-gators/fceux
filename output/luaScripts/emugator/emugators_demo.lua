@@ -33,9 +33,6 @@ FAMICOM_Roms[1] = {}
 
 local romDir = [[../../../../emugator/ROMs/]]
 local romCartDir = [[../../../../emugator/ROM_Carts/]]
-=======
-local romDir = [[../../../emugator/ROMs/]]
-local romCartDir = [[../../../emugator/ROM_Carts/]]
 
 --GUI
 -- Load the wxLua module
