@@ -215,6 +215,7 @@ while(true) do
 
 		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2) and inpt.leftclick) then
 			if (wasClicked == false) then
+				gui.opacity(1.0)	
 				emu.closeRom()
 			end
 			wasClicked = true
