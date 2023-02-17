@@ -645,6 +645,13 @@ static int emu_insertOrEjectDisk(lua_State* L)
 	return 0;
 }
 
+// emu.closeRom()
+// Closes out of currently running ROM to allow user to switch games
+static int emu_closeRom(lua_State* L)
+{
+	CloseGame();
+	return 0;
+}
 
 // emu.loadrom(string filename)
 //
@@ -5466,9 +5473,6 @@ static int emugator_yieldwithflag(lua_State* L)
 	luaYieldFlag = true;
 
 	return lua_yield(L, 0);
-
-
-	// It's actually rather disappointing...
 }
 
 
@@ -6089,6 +6093,7 @@ static const struct luaL_reg emulib [] = {
 	{"getdir", emu_getdir},
 	{"switchDisk", emu_switchDisk},
 	{"insertOrEjectDisk", emu_insertOrEjectDisk},
+	{"closeRom", emu_closeRom},
 	{"loadrom", emu_loadrom},
 	{"print", print}, // sure, why not
 	{"exit", emu_exit}, // useful for run-and-close scripts
