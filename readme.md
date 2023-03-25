@@ -4,7 +4,14 @@ An open source NES Emulator for Windows and Unix that features solid emulation a
 
 Our goal is to customize FCEUX in order to deliver users a more realistic experience when playing games utilizing the Famicom Disk System. Users can use the emulator on Windows or Unix devices. Unix devices have a more complex build process but have the benefit of being able to use physical buttons for certain features of the emulator, mainly Famicom Disk System-specific ones. 
 
+## Release Candidate Info
 * Link to repository - https://github.com/Emu-gators/fceux
+### Usability
+
+### Build Quality
+The Windows build is fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. 
+
+The Linux build is almost complete, bar minor, known bugs stemming from differences in drivers in the Windows and Linux builds of FCEUX. The GUI has some visual errors, and sound effects in the menu are not handled the same way they are in Windows. However, all other functionality is stable, and the Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
 
 ## Build Instructions
 ### Windows Build Instructions
