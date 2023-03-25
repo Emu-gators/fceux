@@ -95,7 +95,7 @@ for rom in io.popen([[ls "]] ..romDir.. [[" | xargs -d '\n' -n 1 basename]]):lin
 			pageSlot = 1
 			pageNumber = pageNumber + 1
 		end
-		totalRoms = totalRoms + 1
+	totalRoms = totalRoms + 1
 	end
 end
 
@@ -150,15 +150,15 @@ while(true) do
 		--Load Cartridge if dropped on Console
 		if (inpt.A  == nil) then
 			if((inpt.xmouse > console.x1) and (inpt.xmouse < console.x2) and (inpt.ymouse > console.y1) and (inpt.ymouse < console.y2) and selectedRom.selected ~= nil) then
-				--playSound([["./gui/sounds/loadCartridge.wav"]]);
+				playSound([["./gui/sounds/loadCartridge.wav"]]);
 				emu.loadrom(romDir ..FAMICOM_Roms[currPage][selectedRom.selected].rom)
 			elseif((inpt.xmouse > PAGE_LEFT.x) and (inpt.xmouse < PAGE_LEFT.x + leftArrow:sizeX()) and (inpt.ymouse > PAGE_LEFT.y) and (inpt.ymouse < PAGE_LEFT.y + leftArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-				--playSound([["./gui/sounds/buttonPress.wav"]]);
+				playSound([["./gui/sounds/buttonPress.wav"]]);
 				if(currPage > 1) then
 					currPage = currPage - 1
 				end
 			elseif((inpt.xmouse > PAGE_RIGHT.x) and (inpt.xmouse < PAGE_RIGHT.x + rightArrow:sizeX()) and (inpt.ymouse > PAGE_RIGHT.y) and (inpt.ymouse < PAGE_RIGHT.y + rightArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-				--playSound([["./gui/sounds/buttonPress.wav"]]);
+				playSound([["./gui/sounds/buttonPress.wav"]]);
 				if(currPage < pageNumber) then
 					currPage = currPage + 1
 				end
