@@ -6,6 +6,7 @@ Our goal is to customize FCEUX in order to deliver users a more realistic experi
 
 ## Release Candidate Info
 * Link to repository - https://github.com/Emu-gators/fceux
+Note - since the Linux build functions different from the Windows build, make sure to clone the Linux Build branch, not the master.
 
 * All major elements of the project are usable, with no bugs resulting in critical failure or loss of information present.
 ### Usability
