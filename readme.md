@@ -16,7 +16,7 @@ All planned features of the emulator are present, responsive and easy to underst
 ### Build Quality
 The Windows build is fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. 
 
-The Linux build is almost complete, bar minor, known bugs stemming from differences in drivers in the Windows and Linux builds of FCEUX. The GUI has some visual errors, and sound effects in the menu are not handled the same way they are in Windows. However, all other functionality is stable, and the Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
+The Linux build is almost complete, bar minor, known bugs stemming from differences in drivers in the Windows and Linux builds of FCEUX. The Linux build has some driver-related issues related to keyboard input/mouse input. However, all other functionality is stable, and the Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
 
 ## Build Instructions
 ### Windows Build Instructions
