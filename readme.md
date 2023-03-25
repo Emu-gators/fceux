@@ -4,6 +4,8 @@ An open source NES Emulator for Windows and Unix that features solid emulation a
 
 Our goal is to customize FCEUX in order to deliver users a more realistic experience when playing games utilizing the Famicom Disk System. Users can use the emulator on Windows or Unix devices. Unix devices have a more complex build process but have the benefit of being able to use physical buttons for certain features of the emulator, mainly Famicom Disk System-specific ones. 
 
+* Link to repository - https://github.com/Emu-gators/fceux
+
 ## Build Instructions
 ### Windows Build Instructions
 The recommended way to build this repository is to clone and build it directly in Visual Studio. If you choose to do this, you will also need the Windows XP toolset. If it is not installed, go to "Tools" > "Get Tools and Features". Select "Individual Components" and then install "C++ Windows XP Support for VS 2017 (v141) tools". These solution files will compile FCEUX and some included libraries for full functionality.
@@ -95,10 +97,12 @@ OR:
 	Delete build directory and start over at initial cmake step:
    rm -rf build;
    
------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
-notes 
-* lua peripheral
-* lua GD
-* configure auto-startup
-* configure lua script for GPIO use
-* 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------  
+In addition, you will also need to download the following lua packages:
+* lua-gd, link present above
+* lua-periphery, https://github.com/vsergeev/lua-periphery
+
+* auto-start can also be configured on your Linux-based device. Since this is a device-level operation, we cannot include it in our repository, so instructions will be provided for you to recreate.
+
+* In the "Emugators_Demo.lua" script, you will find certain portions of code commented out with notes mentioning that the code is for GPIO implementation. Depending on your device and GPIO pins, you will have to edit this in order to use it properly. It is configured for the ROC-RK3328CC Renegade Board, with Pins 11, 13, and 15 being used for GPIO. If you are using the same device with the same pin setup, you can un-comment the appropriate code to be able to use the physical buttons for Unloading, Switching, and Inserting/Ejecting disks.
+
