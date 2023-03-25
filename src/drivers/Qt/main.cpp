@@ -95,6 +95,7 @@ static bool showSplashScreen(void)
 
 int main( int argc, char *argv[] )
 {
+	FCEU_DispMessage("John Wick QT", 0);
 	int retval = 0;
 
 	fceuWrapperPreInit(argc, argv);

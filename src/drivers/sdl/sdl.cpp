@@ -558,6 +558,8 @@ int KillFCEUXonFrame = 0;
  */
 int main(int argc, char *argv[])
 {
+			FCEU_DispMessage("John Wick SDL", 0);
+
   // this is a hackish check for the --help arguemnts
   // these are normally processed by the config parser, but SDL_Init
   // must be run before the config parser: so if even SDL_Init fails,

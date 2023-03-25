@@ -1401,7 +1401,7 @@ int  fceuWrapperUpdate( void )
 	if ( GameInfo )
 	{
 		DoFun(frameskip, periodic_saves);
-	
+
 		hexEditorUpdateMemoryValues();
 
 		if ( consoleWindow )
@@ -1418,6 +1418,36 @@ int  fceuWrapperUpdate( void )
 			// because to MAC OS X SDL2 requires it.
 			//FCEUD_UpdateInput(); 
 		}
+	}
+	else if (luaYieldFlag) { //emugator
+		if(!(inited&4)) {
+			DriverInitialize(GameInfo);
+		}
+
+		FCEUI_ResetPalette();
+		//while (luaYieldFlag && !GameInfo) {
+			luaYieldFlag = false;
+			//UpdateFCEUWindow();
+			//UpdateRawInputAndHotkeys();
+
+			uint8* gfx = 0;
+			FCEUI_AdvanceNoFrame(&gfx);
+
+
+		if (gfx && (inited&4)) 
+		{
+			BlitScreen(gfx);
+			FCEU_DispMessage("John Wick Blit", 0);
+		}
+
+			
+		//}
+
+		fceuWrapperUnLock();
+
+		emulatorHasMutex = 0;
+
+		msleep( 100 );
 	}
 	else
 	{

@@ -49,8 +49,8 @@ end
 -- warning: clock can eventually wrap around for sufficiently large n
 -- (whose value is platform dependent).  Even for n == 1, clock() - t0
 -- might become negative on the second that clock wraps. Credit: http://lua-users.org/wiki/SleepFunction
-
-for rom in io.popen([[dir "]] ..romDir.. [[" /b]]):lines() do
+--FOR WINDOWS: [[dir ]] .. romDir.. [[" /b]]
+for rom in io.popen([[ls "]] ..romDir.. [[" | xargs -d '\n' -n 1 basename]]):lines() do
 	local dot = nil
 	local dotPos = 0
 	while(true) do
@@ -110,8 +110,19 @@ end
 --Main Loop
 while(true) do 
 	local inpt = input.read()
-
+	if(inpt.A) then
+		print("A")
+	else
+		print("No A")
+		print(inpt.xmouse)
+	end
 	if(emu.emulating() == false) then --should be changed to allow gui to be swaped to while emulating. maybe check if paused?
+		if(inpt.A ) then
+			print("Lmb pressed")
+		else
+			print("Lmb not pressed")
+			print(inpt.xmouse)
+		end
 		wasClicked = false
 
 		--draw gui background
@@ -137,17 +148,17 @@ while(true) do
 		gui.gdoverlay(console.x1 + 10, console.y1 + 30, im:gdStr())  --doesnt actually line up quite right with hitbox, needs to be adjusted when image is finalized
 
 		--Load Cartridge if dropped on Console
-		if (inpt.leftclick == nil) then
+		if (inpt.A  == nil) then
 			if((inpt.xmouse > console.x1) and (inpt.xmouse < console.x2) and (inpt.ymouse > console.y1) and (inpt.ymouse < console.y2) and selectedRom.selected ~= nil) then
-				playSound([["./gui/sounds/loadCartridge.wav"]]);
+				--playSound([["./gui/sounds/loadCartridge.wav"]]);
 				emu.loadrom(romDir ..FAMICOM_Roms[currPage][selectedRom.selected].rom)
 			elseif((inpt.xmouse > PAGE_LEFT.x) and (inpt.xmouse < PAGE_LEFT.x + leftArrow:sizeX()) and (inpt.ymouse > PAGE_LEFT.y) and (inpt.ymouse < PAGE_LEFT.y + leftArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-				playSound([["./gui/sounds/buttonPress.wav"]]);
+				--playSound([["./gui/sounds/buttonPress.wav"]]);
 				if(currPage > 1) then
 					currPage = currPage - 1
 				end
 			elseif((inpt.xmouse > PAGE_RIGHT.x) and (inpt.xmouse < PAGE_RIGHT.x + rightArrow:sizeX()) and (inpt.ymouse > PAGE_RIGHT.y) and (inpt.ymouse < PAGE_RIGHT.y + rightArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
-				playSound([["./gui/sounds/buttonPress.wav"]]);
+				--playSound([["./gui/sounds/buttonPress.wav"]]);
 				if(currPage < pageNumber) then
 					currPage = currPage + 1
 				end
@@ -172,7 +183,7 @@ while(true) do
 			for _, rom in pairs(FAMICOM_Roms[currPage]) do
 				if ((inpt.xmouse > rom.x) and (inpt.xmouse < (rom.x+CART_WIDTH)) and (inpt.ymouse > rom.y) and (inpt.ymouse < (rom.y+CART_HEIGHT))) then
 					gui.text(inpt.xmouse, inpt.ymouse, rom.name)
-					if(inpt.leftclick and lmbWasPressed == false) then
+					if(inpt.A  and lmbWasPressed == false) then
 						selectedRom.selected = rom.slot
 						selectedRom.x = inpt.xmouse
 						selectedRom.y = inpt.ymouse
@@ -192,10 +203,17 @@ while(true) do
 			gui.text(inpt.xmouse, inpt.ymouse, FAMICOM_Roms[currPage][selectedRom.selected].name)
 		end
 
-		lmbWasPressed = inpt.leftclick ~= nil
+		lmbWasPressed = inpt.A  ~= nil
 
 		emugator.yieldwithflag() -- call this if you want the script to run without emulation (game running)
 	else
+		if(inpt.A ) then
+			print("Lmb pressed")
+		else
+			print("Lmb not pressed")
+			print(inpt.xmouse)
+		end
+
 		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2)) then
 			gui.opacity(1.0)	
 			gui.rect(unloadButton.x1, unloadButton.y1, unloadButton.x2, unloadButton.y2, "blue", "white")
@@ -224,21 +242,22 @@ while(true) do
 			gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
 		end
 
-		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2) and inpt.leftclick) then
+		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2) and inpt.A ) then
 			if (wasClicked == false) then
 				gui.opacity(1.0)	
 				emu.closeRom()
 			end
 			wasClicked = true
 			emugator.yieldwithflag()
-		elseif ((inpt.xmouse > switchButton.x1) and (inpt.xmouse < switchButton.x2) and (inpt.ymouse > switchButton.y1) and (inpt.ymouse < switchButton.y2) and inpt.leftclick) then
+		elseif ((inpt.xmouse > switchButton.x1) and (inpt.xmouse < switchButton.x2) and (inpt.ymouse > switchButton.y1) and (inpt.ymouse < switchButton.y2) and inpt.A ) then
 			if (wasClicked == false) then
 			  emu.switchDisk()
 			end
 			wasClicked = true
 			emu.frameadvance()
-		elseif ((inpt.xmouse > ejectInsertButton.x1) and (inpt.xmouse < ejectInsertButton.x2) and (inpt.ymouse > ejectInsertButton.y1) and (inpt.ymouse < ejectInsertButton.y2) and inpt.leftclick) then
+		elseif ((inpt.xmouse > ejectInsertButton.x1) and (inpt.xmouse < ejectInsertButton.x2) and (inpt.ymouse > ejectInsertButton.y1) and (inpt.ymouse < ejectInsertButton.y2) and inpt.A ) then
 			if (wasClicked == false) then
+				print("ejecting")
 			  emu.insertOrEjectDisk()
 			end
 			wasClicked = true
