@@ -20,21 +20,34 @@ Table of Contents
 5.  FAQ
 6.  Contact
 
-1 - Requirements
+1 - Requirements (specific commands in parentheses where helpful)
 ----------------
 * sdl2  - Version >= 2.0  (sdl2 >= 2.8 recommended)
+	(sudo apt install libsdl2-dev)
+
 * cmake - Required to build fceux. (cmake >= 3.8 recommended)
 * qt5 OR qt6  - (qt version >= 5.11 recommended)
 	- Required Qt Modules: Widgets and OpenGL
 	- Optional Qt Modules: Help
+	
+	(sudo apt install -y qtcreator qtbase5-dev qt5-qmake cmake)
+	
 * liblua5.1 (optional) - Will statically link internally if the system cannot provide this.
 * libx264 (optional) - H.264 video encoder for avi recording (recommended)
 * libx265 (optional) - H.265 video encoder for avi recording (recommended)
 * ffmpeg libraries (optional) - for avi recording (recommended)
 *	- ffmpeg libraries used: libavcodec  libavformat  libavutil  libswresample  libswscale
 * minizip  
+	(sudo apt install libminizip-dev)
 * zlib  
+	(sudo apt install zlib1g)
 * openGL
+
+	(sudo apt-get update
+	 sudo apt-get install cmake pkg-config
+	 sudo apt-get install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+	 sudo apt-get install libglew-dev libglfw3-dev libglm-dev
+	 sudo apt-get install libao-dev libmpg123-dev)
 * c++ compiler -- you may use g++ from gcc or clang++ from llvm or msvc 2019
 
 2 - Installation
@@ -111,17 +124,27 @@ Use the GUI config window to set style options.
 
 5 - LUA Scripting
 -----------------
-FCEUX provides a LUA 5.1 engine that allows for in-game scripting capabilities.  LUA is enabled either way. It is just a matter of whether LUA is statically linked internally or dynamically linked to a system library.
+FCEUX provides a LUA 5.1 engine that allows for in-game scripting capabilities.  LUA is enabled either way. 
+It is just a matter of whether LUA is statically linked internally or dynamically linked to a system library.
 
 A collection of LUA scripts are provided with the source distribuition in the output directory:
 
 	$source_directory/output/luaScripts
 
-You should be able to run most of the scripts in this directory out of the box.  However, some of the the lua scripts require functionality from the "auxlib.lua" library.  This file can be copied from "./bin/auxlib.lua" or "./src/auxlib.lua".  You will need to place this file in the LUA library search path if a script bombs out looking for auxlib.lua. If the script bombs out, the console output will let you know what the search path are (/usr/local/lib/lua/5.1/ on my particular system).  You can simply copy the auxlib to a preferred location to utilize the functions in the auxiliary lua library. 
+You should be able to run most of the scripts in this directory out of the box.  
+However, some of the the lua scripts require functionality from the "auxlib.lua" library.  
+This file can be copied from "./bin/auxlib.lua" or "./src/auxlib.lua".  
+You will need to place this file in the LUA library search path if a script bombs out looking for auxlib.lua. 
+If the script bombs out, the console output will let you know what the search path are (/usr/local/lib/lua/5.1/ on my particular system).  
+You can simply copy the auxlib to a preferred location to utilize the functions in the auxiliary lua library. 
 
-In addition, some of the lua scripts require functionality from the "iup" GUI library.  You can obtain binaries and source for "iup" upstream (http://www.tecgraf.puc-rio.br/iup/), but I would recommend obtaining packages from your Linux distribution if you are able, as it can be difficult to compile or get the binaries working correctly on a given system.
+In addition, some of the lua scripts require functionality from the "iup" GUI library.  
+You can obtain binaries and source for "iup" upstream (http://www.tecgraf.puc-rio.br/iup/), 
+but I would recommend obtaining packages from your Linux distribution if you are able, 
+as it can be difficult to compile or get the binaries working correctly on a given system.
 
-You will need to add the location that the libiup*.so files to the LUA_CPATH.  This can be done with the following command (please note that the location where iup is installed with vary based on how you installed iup):
+You will need to add the location that the libiup*.so files to the LUA_CPATH.  
+This can be done with the following command (please note that the location where iup is installed with vary based on how you installed iup):
 
 	export LUA_CPATH="/path/to/iup/lib/lib?51.so;"
 
@@ -129,7 +152,8 @@ For example, if libiuplua51.so is located in '/usr/lib', you can run the followi
 
 	export LUA_CPATH="/usr/lib/lib?51.so;"
 
-Finally, if any scripts complaints about "attempt to index global 'iup' (a nil value)", this means that "iup" needs to be explicitly loaded into the script.  You can add the following line to the head of script to manually load "iup":
+Finally, if any scripts complaints about "attempt to index global 'iup' (a nil value)", 
+this means that "iup" needs to be explicitly loaded into the script.  You can add the following line to the head of script to manually load "iup":
 
 	require("iuplua")
 
