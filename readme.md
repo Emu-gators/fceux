@@ -112,7 +112,19 @@ In addition, you will also need to download the following lua packages:
 * lua-gd, link present above
 * lua-periphery, https://github.com/vsergeev/lua-periphery
 
-* auto-start can also be configured on your Linux-based device. Since this is a device-level operation, we cannot include it in our repository, so instructions will be provided for you to recreate.
+* auto-start can also be configured on your Linux-based device. This method ensures that the X Window syatem and LXDE desktop environments are initialized before attempting to launch fceux. This is necessary because fceux depends on these to run its GUI. Since this is a device-level operation, we cannot include it in our repository, so instructions will be provided for you to recreate:
+	1. Create autostart directory
+		mkdir /home/.config/autostart
+	2. Add a .desktop file to the autostart directory
+		nano /home/.config/autostart/[filename].desktop
+	3. Type the following in the file
+		[Desktop Entry]
+		Type=Application
+		Name=FCEUX
+		Exec=[path to fceux executable]
+FCEUX should now automatically launch on startup after signing in.
+Reference: https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/all 
+
 
 * In the "Emugators_Demo.lua" script, you will find certain portions of code commented out with notes mentioning that the code is for GPIO implementation. Depending on your device and GPIO pins, you will have to edit this in order to use it properly. It is configured for the ROC-RK3328CC Renegade Board, with Pins 11, 13, and 15 being used for GPIO. If you are using the same device with the same pin setup, you can un-comment the appropriate code to be able to use the physical buttons for Unloading, Switching, and Inserting/Ejecting disks.
 
