@@ -9,7 +9,7 @@ Our goal is to customize FCEUX in order to deliver users a more realistic experi
 
 * All major elements of the project are usable, with no bugs resulting in critical failure or loss of information present.
 ### Usability
-All planned features of the emulator are present, responsive and easy to understand. The Windows build is finished and thoroughly tested from the Beta Build. The Linux build is also usable, but we have not been able to fully test the GPIO functionality or do in-depth stress testing on the GUI. In order to test the Linux build we have been using Libre's RC-RK3328-CC Renegade Board flashed with Raspbian. Currently this rendition is stable but has yet been fully tested.
+All planned features of the emulator are present, responsive and easy to understand. The Windows build is finished and thoroughly tested from the Beta Build. The Linux build is also usable, but we have not been able to fully test the GPIO functionality or do in-depth stress testing on the GUI. In order to test the Linux build we have been using Libre's [ROC-RK3328-CC Renegade Board](https://libre.computer/products/roc-rk3328-cc/) flashed with [Raspbian](https://hub.libre.computer/t/raspbian-11-bullseye-for-libre-computer-boards/82). Currently this rendition is stable but has yet been fully tested.
 
 ### Build Quality
 The Windows build is fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. 
