@@ -4,19 +4,18 @@ An open source NES Emulator for Windows and Unix that features solid emulation a
 
 Our goal is to customize FCEUX in order to deliver users a more realistic experience when playing games utilizing the Famicom Disk System. Users can use the emulator on Windows or Unix devices. Unix devices have a more complex build process but have the benefit of being able to use physical buttons for certain features of the emulator, mainly Famicom Disk System-specific ones. 
 
-## Release Candidate Info
+## Production Release Info
 * Link to repository - https://github.com/Emu-gators/fceux
+* Branch for Linux Build - https://github.com/Emu-gators/fceux/tree/linuxBuild
 
 Note - since the Linux build functions different from the Windows build, if you want to run on Linux make sure to clone the Linux Build branch, not the master.
 
-* All major elements of the project are usable, with no bugs resulting in critical failure or loss of information present.
+
 ### Usability
-All planned features of the emulator are present, responsive and easy to understand. The Windows build is finished and thoroughly tested from the Beta Build. The Linux build is also usable, but we have not been able to fully test the GPIO functionality or do in-depth stress testing on the GUI. In order to test the Linux build we have been using Libre's [ROC-RK3328-CC Renegade Board](https://libre.computer/products/roc-rk3328-cc/) flashed with [Raspbian](https://hub.libre.computer/t/raspbian-11-bullseye-for-libre-computer-boards/82). Currently this rendition is stable but has yet to be fully tested.
+All planned features of the emulator are present, responsive and easy to understand. Both the Windows build and the Linux build are fully finished and thoroughly tested from the Beta Build. The Linux build also has the addition of GPIO input options for unloading ROMs, inserting/ejecting disks, and switching a disk's side. In order to test the Linux build we used Libre's [ROC-RK3328-CC Renegade Board](https://libre.computer/products/roc-rk3328-cc/) flashed with [Raspbian](https://hub.libre.computer/t/raspbian-11-bullseye-for-libre-computer-boards/82).
 
 ### Build Quality
-The Windows build is fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. 
-
-The Linux build is fully functional with a few minor issues stemming from differences between the platform drivers. The Linux build has some driver-related issues related to keyboard input/mouse input that do not inhibit functionality, but should still be resolved for the production release. However, all other functionality is stable, and the Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
+Both the Windows build and the Linux build are fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. The Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
 
 ## Build Instructions
 ### Windows Build Instructions
@@ -128,5 +127,5 @@ FCEUX should now automatically launch on startup after signing in.
 Reference: https://learn.sparkfun.com/tutorials/how-to-run-a-raspberry-pi-program-on-startup/all 
 
 
-* In the "Emugators_Demo.lua" script, you will find certain portions of code commented out with notes mentioning that the code is for GPIO implementation. Depending on your device and GPIO pins, you will have to edit this in order to use it properly. It is configured for the ROC-RK3328CC Renegade Board, with Pins 11, 13, and 15 being used for GPIO. If you are using the same device with the same pin setup, you can un-comment the appropriate code to be able to use the physical buttons for Unloading, Switching, and Inserting/Ejecting disks.
+* In the "Emugators_Demo.lua" script present in the Linux branch of the repository, there is code is for GPIO implementation. Depending on your device and GPIO pins, you will have to edit the "gpio.lua" file in order to use GPIO properly. It is configured for the ROC-RK3328CC Renegade Board, with Pins 11, 13, and 15 being used for GPIO. If you are using the same device with the same pin setup, you can keep the same code to be able to use the physical buttons for Unloading, Switching, and Inserting/Ejecting disks. Otherwise, you will have to edit the GPIO pins.
 
