@@ -2,14 +2,6 @@
 --loaded game. i.e. fix the cream not white issue observed with loz2/smb setup!!
 
 local gd = require("gd")
-require "gpio"
-
-loadUnloadDiskButton = 84
-insertEjectDiskButton = 85
-switchDiskButton = 86
-pinMode(loadUnloadDiskButton,INPUT)
-pinMode(insertEjectDiskButton,INPUT)
-pinMode(switchDiskButton,INPUT)
 
 emu.print("Go Gators!")
 MAX_SCREEN_WIDTH = 256
@@ -48,8 +40,6 @@ local toggleCRT = true;
 local totalRoms = 0
 local pageNumber = 1
 local pageSlot = 1
-
-local buttonPressed = false
 
 local clock = os.clock
 function sleep(n)  -- seconds
@@ -113,7 +103,6 @@ if(pageSlot == 1) then
 	pageNumber = pageNumber - 1
 end
 
-
 function playSound(sound)
 	os.execute([[powershell -c (New-Object Media.SoundPlayer ]].. sound ..[[).PlaySync();]])
 end
@@ -122,24 +111,21 @@ end
 while(true) do 
 	local inpt = input.read()
 	if(inpt.A) then
---		print("A")
-	elseif(inpt.C) then
---		print("C")
+		print("A")
 	else
---		print("No A")
---		print(inpt.xmouse)
+		print("No A")
+		print(inpt.xmouse)
 	end
 	if(emu.emulating() == false) then --should be changed to allow gui to be swaped to while emulating. maybe check if paused?
 		if(inpt.A ) then
-			--print("Lmb pressed")
+			print("Lmb pressed")
 		else
-			--print("Lmb not pressed")
-			--print(inpt.xmouse)
+			print("Lmb not pressed")
+			print(inpt.xmouse)
 		end
 		wasClicked = false
 
 		--draw gui background
-		gui.opacity(1.0)
 		gui.rect(0, 0, MAX_SCREEN_WIDTH-1, MAX_SCREEN_HEIGHT-1,"grey")   
 		local srcImg = gd.createFromPng("gui/DrJMicroMuseum.png"):gdStr()
 		gui.gdoverlay(20, 20, srcImg)
@@ -165,7 +151,6 @@ while(true) do
 		if (inpt.A  == nil) then
 			if((inpt.xmouse > console.x1) and (inpt.xmouse < console.x2) and (inpt.ymouse > console.y1) and (inpt.ymouse < console.y2) and selectedRom.selected ~= nil) then
 				playSound([["./gui/sounds/loadCartridge.wav"]]);
-				print("Loading Game\n")
 				emu.loadrom(romDir ..FAMICOM_Roms[currPage][selectedRom.selected].rom)
 			elseif((inpt.xmouse > PAGE_LEFT.x) and (inpt.xmouse < PAGE_LEFT.x + leftArrow:sizeX()) and (inpt.ymouse > PAGE_LEFT.y) and (inpt.ymouse < PAGE_LEFT.y + leftArrow:sizeY()) and selectedRom.selected == nil and lmbWasPressed) then
 				playSound([["./gui/sounds/buttonPress.wav"]]);
@@ -223,35 +208,11 @@ while(true) do
 		emugator.yieldwithflag() -- call this if you want the script to run without emulation (game running)
 	else
 		if(inpt.A ) then
---			print("Lmb pressed")
+			print("Lmb pressed")
 		else
---			print("Lmb not pressed")
---			print(inpt.xmouse)
+			print("Lmb not pressed")
+			print(inpt.xmouse)
 		end
-
---		print(buttonPressed)
-		if(buttonPressed == true) then
-			sleep(0.7)
-			buttonPressed = false
-		end
-		
-		if ((digitalRead(loadUnloadDiskButton) == 1) and (buttonPressed == false)) then
-			gui.opacity(1.0)
-			emu.closeRom()
-			buttonPressed = true;
-		end
-		if ((digitalRead(insertEjectDiskButton) == 1) and (buttonPressed == false)) then
-			emu.insertOrEjectDisk()
-			buttonPressed = true;
---			pinMode(insertEjectDiskButton,OUTPUT)
---			digitalWrite(insertEjectDiskButton,LOW)			
-		end		
-		if ((digitalRead(switchDiskButton) == 1) and (buttonPressed == false)) then
-			emu.switchDisk()
-			buttonPressed = true;
---			pinMode(switchDiskButton,OUTPUT)
---			digitalWrite(switchDiskButton,LOW)			
-		end				
 
 		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2)) then
 			gui.opacity(1.0)	
@@ -275,7 +236,6 @@ while(true) do
 			gui.opacity(1.0)
 			gui.rect(ejectInsertButton.x1, ejectInsertButton.y1, ejectInsertButton.x2, ejectInsertButton.y2, "blue", "white")
 			gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
-			gui.opacity(0.25)
 		else
 			gui.opacity(0.25)
 			gui.rect(ejectInsertButton.x1, ejectInsertButton.y1, ejectInsertButton.x2, ejectInsertButton.y2, "blue", "white")
@@ -297,7 +257,7 @@ while(true) do
 			emu.frameadvance()
 		elseif ((inpt.xmouse > ejectInsertButton.x1) and (inpt.xmouse < ejectInsertButton.x2) and (inpt.ymouse > ejectInsertButton.y1) and (inpt.ymouse < ejectInsertButton.y2) and inpt.A ) then
 			if (wasClicked == false) then
-				--print("ejecting")
+				print("ejecting")
 			  emu.insertOrEjectDisk()
 			end
 			wasClicked = true
@@ -311,15 +271,14 @@ while(true) do
 		--print(scanLine)
 		local keyPress = input.get()
 
-	--	for i in pairs(keyPress) do
+		for i in pairs(keyPress) do
 			if (inpt.C) then
 				toggleCRT = not toggleCRT
 				sleep(0.2)
 			end
---		end
+		end
 		if toggleCRT then
---			gui.drawimage(scanLine,0.3)
-			gui.gdoverlay(0, 0, scanLine,1.5)
+			gui.drawimage(scanLine,0.3)
 		end
 
 	end

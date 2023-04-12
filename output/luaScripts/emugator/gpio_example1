@@ -1,0 +1,21 @@
+#!/usr/bin/lua
+require "gpio"
+pinMode(84,OUTPUT)
+pinMode(85,OUTPUT)
+pinMode(86,OUTPUT)
+
+
+digitalWrite(84,HIGH)
+delay(0.2)
+emu.print(digitalRead(84))
+digitalWrite(85,HIGH)
+delay(0.2)
+digitalWrite(86,HIGH)
+delay(0.2)
+
+
+digitalWrite(84,LOW)
+delay(0.2)
+digitalWrite(85,LOW)
+delay(0.2)
+digitalWrite(86,LOW)

@@ -1,0 +1,19 @@
+#!/usr/bin/lua
+require "gpio"
+
+----- set GPIO as output
+for i=1, 5 do
+  pinMode(GPIO[i],OUTPUT)
+end
+
+----- set GPIO to HIGH
+for i=1, 5 do
+  digitalWrite(GPIO[i],HIGH)
+  delay(0.2)
+end
+
+----- set GPIO to LOW
+for i=1, 5 do
+  digitalWrite(GPIO[i],LOW)
+  delay(0.2)
+end
