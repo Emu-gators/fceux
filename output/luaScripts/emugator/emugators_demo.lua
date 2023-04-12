@@ -11,6 +11,20 @@ pinMode(loadUnloadDiskButton,INPUT)
 pinMode(insertEjectDiskButton,INPUT)
 pinMode(switchDiskButton,INPUT)
 
+
+-- Lua-Periphery Library for linux required, doesn't work on non-linux devices 
+-- Currently commented out for convience for Windows-based builds
+-- Remove comments for Linux build
+-- Note : Not fully tested, use at your own risk
+--	local GPIO = require('Periphery').GPIO
+--	local loadUnloadDiskButton = GPIO(84, "in")
+--	local insertEjectDiskButton = GPIO(85, "in")
+--	local switchDiskButton = GPIO(86, "in")
+--	local loadUnloadDiskVal = loadUnloadDiskButton:read()
+--	local insertEjectDiskVal = insertEjectDiskButton:read()
+--	local switchDiskVal = switchDiskButton:read()
+
+
 emu.print("Go Gators!")
 MAX_SCREEN_WIDTH = 256
 MAX_SCREEN_HEIGHT = 240
@@ -282,6 +296,22 @@ while(true) do
 			gui.text(ejectInsertButton.x1+2, ejectInsertButton.y1+2, "Eject/Insert")
 		end
 
+		-- Checks hardware GPIO buttons for input
+		-- Remove comments on Linux build
+		-- Note : Not fully tested, use at your own risk
+--		loadUnloadDiskVal = loadUnloadDiskButton:read()
+--		if (loadUnloadDiskVal == true) then
+--			emu.closeRom()
+--		end
+--		insertEjectDiskVal = insertEjectDiskButton:read()
+--		if (insertEjectDiskVal == true) then
+--			emu.insertOrEjectDisk()
+--		end 
+--		switchDiskVal = switchDiskButton:read()
+--		if (switchDiskVal == true) then
+--			emu.switchDisk()
+--		end
+		
 		if ((inpt.xmouse > unloadButton.x1) and (inpt.xmouse < unloadButton.x2) and (inpt.ymouse > unloadButton.y1) and (inpt.ymouse < unloadButton.y2) and inpt.A ) then
 			if (wasClicked == false) then
 				gui.opacity(1.0)	
