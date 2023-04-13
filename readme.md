@@ -17,6 +17,19 @@ All planned features of the emulator are present, responsive and easy to underst
 ### Build Quality
 Both the Windows build and the Linux build are fully complete, with all content fully integrated. Due to licensing reasons, we cannot include any ROMs or ROM images, but we provide a directory where you can add games you own to autopopulate on launch. The Linux build benefits from being able to use an auto-start feature from the hardware as well as GPIO input options for on screen buttons.  
 
+### Features
+The features of the Production Release include:
+
+* Custom library for executing lua scripts independent of emulation status
+* New C++ functions with Lua bindings for ejecting/inserting, switching and unloading disks
+* Redesigned Drag and Drop GUI for loading ROMs
+* Auto-populate discovery system for ROM discovery
+* Toggleable CRT Filter
+* On-screen overlay for disk manipulation procedures
+* Hardware implementation testing with ROC-RK3328 Board (Includes an auto-start script and GPIO functionality)
+
+All of these features have been thoroughly tested and works for both the Windows build and the Linux build. For the Linux Build, the ROC-RK3328 interface is used with Raspbian and is able to be interfaced with a mouse, keyboard, joypad and GPIO buttons. For the Windows build it can be interfaced with a mouse, keyboard and joypad. When using the keyboard on the Linux build version, the use of the 'A' key should be treated as the LMB and the 'C' key should be treated as the toggle CRT filter button. The joypad for both builds should strictly be used for playing the ROM outside of the disk manipulation procedures. For the Linux build, the disk manipulation button overlay can be interacted with by using a mouse and the 'A' key or through the use of external pull-down resistor buttons (GPIO). For the Windows build, the disk manipulation button overlay can be interacted only through the mouse peripheral.
+
 ## Build Instructions
 ### Windows Build Instructions
 The recommended way to build this repository is to clone and build it directly in Visual Studio. If you choose to do this, you will also need the Windows XP toolset. If it is not installed, go to "Tools" > "Get Tools and Features". Select "Individual Components" and then install "C++ Windows XP Support for VS 2017 (v141) tools". These solution files will compile FCEUX and some included libraries for full functionality.
