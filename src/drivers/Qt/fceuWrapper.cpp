@@ -244,18 +244,17 @@ DriverKill()
 {
 	if (!noconfig)
 		g_config->save();
-printf("John Wick: Driver Kill1\n");
 
 	KillJoysticks();
-printf("John Wick: Driver Kill2\n");
+
 	if(inited&4)
 		KillVideo();
-		printf("John Wick: Driver Kill3\n");
+
 	if(inited&1)
 		KillSound();
-		printf("John Wick: Driver Kill4\n");
+
 	inited=0;
-	printf("John Wick: Driver Kill5\n");
+
 }
 
 int LoadGameFromLua( const char *path )
@@ -466,8 +465,6 @@ CloseGame(void)
 		return(0);
 	}
 
-	printf("John Wick: CloseGame1\n");
-
 	// If the emulation thread is stuck hanging at a breakpoint,
 	// disable breakpoint debugging and wait for the thread to 
 	// complete its frame. So that it is idle with a minimal call
@@ -489,7 +486,6 @@ CloseGame(void)
 		}
 		bpDebugSetEnable(true);
 	}
-printf("John Wick: CloseGame2\n");
 	hexEditorSaveBookmarks();
 	saveGameDebugBreakpoints();
 	debuggerClearAllBreakpoints();
@@ -518,11 +514,11 @@ printf("John Wick: CloseGame2\n");
 	{
 		tasWin->requestWindowClose();
 	}
-printf("John Wick: CloseGame3\n");
+
 	FCEUI_CloseGame();
-printf("John Wick: CloseGame4\n");
-	//DriverKill();
-	printf("John Wick: CloseGame5\n");
+
+	//DriverKill(); //emuugator - change this to only kill drivers if luaYieldFlag not set
+
 	isloaded = 0;
 	GameInfo = 0;
 
@@ -532,7 +528,7 @@ printf("John Wick: CloseGame4\n");
 	}
 
 	InputUserActiveFix();
-	printf("John Wick: CloseGame6\n");
+
 	return(1);
 }
 
@@ -1445,7 +1441,6 @@ int  fceuWrapperUpdate( void )
 		if (gfx && (inited&4)) 
 		{
 			BlitScreen(gfx);
-			FCEU_DispMessage("John Wick Blit", 0);
 		}
 
 			

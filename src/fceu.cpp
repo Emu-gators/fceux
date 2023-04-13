@@ -883,21 +883,10 @@ void FCEUI_Emulate(uint8 **pXBuf, int32 **SoundBuf, int32 *SoundBufSize, int ski
 }
 
 void FCEUI_AdvanceNoFrame(uint8** pXBuf) {
-	if(XBuf == 0)
-		FCEU_DispMessage("John Wick XBUF 0", 0);
-
 	FCEU_ClearScreen();
-
-		if(XBuf == 0)
-			FCEU_DispMessage("John Wick XBUF 1", 0);
 	FCEU_LuaFrameBoundary();
-
-		if(XBuf == 0)
-			FCEU_DispMessage("John Wick XBUF 2", 0);
 	FCEU_DrawLuaGui();
-
-		if(XBuf == 0)
-			FCEU_DispMessage("John Wick XBUF 3", 0);
+	
 	*pXBuf = XBuf;
 }
 

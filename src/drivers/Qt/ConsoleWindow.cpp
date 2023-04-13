@@ -2409,7 +2409,6 @@ void consoleWin_t::loadRomRequestCB( QString s )
 void consoleWin_t::closeROMCB(void)
 {
 	FCEU_WRAPPER_LOCK();
-	printf("John Wick: lock aquired\n");
 	CloseGame();
 	FCEU_WRAPPER_UNLOCK();
 }
